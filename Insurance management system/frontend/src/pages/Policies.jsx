@@ -11,7 +11,10 @@ function Policies({ user }) {
 
     const fetchPolicies = async () => {
         try {
-            const res = await axios.get(`/api/policies/user/${user.id}`);
+            const token = localStorage.getItem('jwt');
+            const res = await axios.get(`/api/policies/user/${user.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setPolicies(res.data);
         } catch (error) {
             console.error(error);
@@ -21,7 +24,10 @@ function Policies({ user }) {
     const createPolicy = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/policies', { ...newPolicy, userId: user.id });
+            const token = localStorage.getItem('jwt');
+            await axios.post('/api/policies', { ...newPolicy, userId: user.id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setNewPolicy({ policyNumber: '', type: 'HEALTH', premiumAmount: 0 });
             fetchPolicies();
         } catch (error) {

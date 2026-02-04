@@ -13,7 +13,10 @@ function Claims({ user }) {
 
     const fetchClaims = async () => {
         try {
-            const res = await axios.get(`/api/claims/user/${user.id}`);
+            const token = localStorage.getItem('jwt');
+            const res = await axios.get(`/api/claims/user/${user.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setClaims(res.data);
         } catch (error) {
             console.error(error);
@@ -22,7 +25,10 @@ function Claims({ user }) {
 
     const fetchPolicies = async () => {
         try {
-            const res = await axios.get(`/api/policies/user/${user.id}`);
+            const token = localStorage.getItem('jwt');
+            const res = await axios.get(`/api/policies/user/${user.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setPolicies(res.data);
         } catch (error) {
             console.error(error);
@@ -32,13 +38,18 @@ function Claims({ user }) {
     const submitClaim = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/claims', { ...newClaim, userId: user.id });
+            const token = localStorage.getItem('jwt');
+            await axios.post('/api/claims', { ...newClaim, userId: user.id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setNewClaim({ policyId: '', description: '' });
             fetchClaims();
 
             // Send notification
             try {
-                await axios.post(`/api/notifications?to=${user.email || user.username}&message=Claim Submitted`);
+                await axios.post(`/api/notifications?to=${user.email || user.username}&message=Claim Submitted`, null, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
             } catch (err) { }
 
         } catch (error) {
